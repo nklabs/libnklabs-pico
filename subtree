@@ -1,0 +1,14 @@
+Included subtree with:
+
+  git subtree add --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
+
+Pull changes with:
+
+  git subtree pull --prefix libnklabs git@github.com:nklabs/libnklabs.git main --squash
+
+Push changes with:
+
+  git subtree push --prefix libnklabs git@github.com:nklabs/libnklabs.git main
+
+
+  git subtree add --prefix pico-sdk git@github.com:raspberrypi/pico-sdk.git master --squash

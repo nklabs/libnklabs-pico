@@ -19,7 +19,7 @@ is what we've learned:
 This lets you install your firmware by just copying this file to the fake drive.
 
 * The image must include a second stage bootloader.  This a separate program
-built on its own.  A python script pads out and adds a checksum to the
+built on its own.  A Python script pads out and adds a checksum to the
 resulting image.  It is then converted into ASCII hex bytes in an assembly
 language source file which is then assembled and included with your own
 program.  A key point is that this bootloader must know the type of flash

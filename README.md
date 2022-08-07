@@ -29,9 +29,10 @@ SPI-flash IC that is attached to the RP2040.  CMake produces a C header file
 that indicates the board type.  See generated/pico/config_autogen.h,
 pico-sdk/src/boards/include/boards, and pico-sdk/src/rp2_common/boot_stage2.
 
-Otherwise the build process is straightforward, matching any other ARM
-Cortex-M0 device.  Aside from ARM cross-compiler, the only prerequisites are
-Python3 and a native C++ compiler.
+Our Makefile performs the above tasks.  Aside from these, the build process
+is straightforward, matching any other ARM Cortex-M device.  Aside from ARM
+cross-compiler, the only prerequisites are Python3 and a native C++
+compiler.
 
 CMake is used to select just the parts of the SDK you use in your project. 
 For our Makefile, we just include all components.  If a component is unused,

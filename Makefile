@@ -1,6 +1,6 @@
 # Makefile for RP2040 / PICO PI
 
-NAME := blink
+NAME := pico
 
 # Which board?  The 2nd stage bootloader needs this to know what type of flash IC is used
 # But also see generated/config_autogen.h

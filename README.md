@@ -65,8 +65,9 @@ your computer.  The board should show up as a USB drive.
 
 3. Copy the pico.uf2 file to /media/$USER/RPI-RP2
 
-The libnklabs CLI should come up on the UART.  The UART uses GP0 and GP1. 
-Connect to it with a USB to serial adapter cable:
+The libnklabs CLI should come up on the UART.  The UART uses GP0 (Tx) and
+GP1 (Rx)- see the photo above.  Connect to it with a USB to 3.3V serial
+adapter cable.  Then you can issue these commands:
 
 	sudo apt-get install picocom
 
@@ -77,8 +78,6 @@ You should see:
 ~~~
 [Initialize] Work queue
 [Initialize] Database
-Neither bank is good!
-cal load failed.
 [Initialize] Command Line Interface
 [Initialize] Begin main loop
 >

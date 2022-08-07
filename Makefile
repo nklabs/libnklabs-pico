@@ -157,6 +157,9 @@ CFLAGS =  \
  -I$(PICO_SDK)src/rp2_common/hardware_spi/include \
  -I$(PICO_SDK)src/rp2_common/pico_unique_id/include \
  -I$(PICO_SDK)src/rp2_common/pico_multicore/include \
+ -I libnklabs/inc \
+ -I config \
+ -I . \
  -mcpu=cortex-m0plus \
  -mthumb \
  -O3 \
@@ -223,7 +226,28 @@ OBJS = \
   $(PICO_SDK)src/rp2_common/pico_unique_id/unique_id.o \
   $(PICO_SDK)src/rp2_common/pico_bootsel_via_double_reset/pico_bootsel_via_double_reset.o \
   $(PICO_SDK)src/rp2_common/pico_multicore/multicore.o \
-  blink.o
+  basic_cmds.o \
+  database.o \
+  info_cmd.o \
+  libnklabs/src/nkchecked.o \
+  libnklabs/src/nkcli.o \
+  libnklabs/src/nkcrclib.o \
+  libnklabs/src/nkdbase.o \
+  libnklabs/src/nkdirect.o \
+  libnklabs/src/nkinfile.o \
+  libnklabs/src/nkmcuflash.o \
+  libnklabs/src/nkoutfile.o \
+  libnklabs/src/nkprintf.o \
+  libnklabs/src/nkreadline.o \
+  libnklabs/src/nkscan.o \
+  libnklabs/src/nksched.o \
+  libnklabs/src/nkserialize.o \
+  libnklabs/src/nkstring.o \
+  libnklabs/src/nkymodem.o \
+  main.o \
+  nkarch_pico.o \
+  nkuart_pico.o \
+  nkymodem_cmd.o \
 
 # Keep object files in a subdirectory
 
@@ -237,7 +261,7 @@ obj/version.o: $(MOST_OBJS) VERSION_MAJOR VERSION_MINOR
 # Link
 # All the --wraps are for directing math functions to use bootloader ROM versions
 
-$(NAME).elf: $(PICO_SDK)src/rp2_common/pico_standard_link/memmap_default.ld $(SUBDIR_OBJS) bs2_default_padded_checksummed.S
+$(NAME).elf: pico.ld $(SUBDIR_OBJS) bs2_default_padded_checksummed.S
 	@echo
 	$(LD)  -mcpu=cortex-m0plus -mthumb -O3 -DNDEBUG \
  -Wl,--build-id=none \
@@ -396,7 +420,7 @@ $(NAME).elf: $(PICO_SDK)src/rp2_common/pico_standard_link/memmap_default.ld $(SU
  -Wl,--wrap=__aeabi_memcpy8 \
  -Wl,--wrap=__aeabi_memset8 \
  -Wl,-Map=$(NAME).map \
- -Wl,--script=$(PICO_SDK)src/rp2_common/pico_standard_link/memmap_default.ld \
+ -Wl,--script=pico.ld \
  -Wl,-z,max-page-size=4096 \
  -Wl,--gc-sections \
  -Wl,--wrap=printf \

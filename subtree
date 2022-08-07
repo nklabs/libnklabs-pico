@@ -12,3 +12,5 @@ Push changes with:
 
 
   git subtree add --prefix pico-sdk git@github.com:raspberrypi/pico-sdk.git master --squash
+
+  git subtree add --prefix pico-examples git@github.com:raspberrypi/pico-examples.git master --squash

@@ -31,9 +31,16 @@ Otherwise the build process is straightforward, matching any other ARM
 Cortex-M0 device.  Aside from ARM cross-compiler, the only prerequisites are
 Python3 and a native C++ compiler.
 
-The Raspberry Pi Pico SDK expects you to use git submodules, but we've
-included it as a subtree instead.  This means that you can use this
+CMake is used to select just the parts of the SDK you use in your project. 
+For our Makefile, we just include all components.  If a component is unused,
+the linker will not include it.  There are not so many components that
+trimming them saves any build time.
+
+The Raspberry Pi Pico SDK expects you to include it as a git submodule, but
+we've included it as a subtree instead.  This means that you can use this
 repository directly- no need for submodule initialization.
+
+Basiclly to build you just clone this repository and type "make".
 
 ## Prerequisites
 

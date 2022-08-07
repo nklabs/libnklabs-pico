@@ -1,5 +1,7 @@
 # libnklabs on Raspberry Pi Pico / RP2040
 
+![Pi Pico](doc/pico.png)
+
 The Rasberry Pi Pico SDK uses CMake for its build environment.  This is an
 added layer of obfuscation that we do not enjoy, so we've replaced it with a
 simple Makefile.
@@ -18,7 +20,7 @@ is what we've learned:
   Microsoft UF2 file suitable for copying to the filesystem that shows up when you plug the Pi Pico into USB.
 This lets you install your firmware by just copying this file to the fake drive.
 
-* The image must include a second stage bootloader.  This a separate program
+* The image must include a second stage bootloader.  This is a separate program
 built on its own.  A Python script pads out and adds a checksum to the
 resulting image.  It is then converted into ASCII hex bytes in an assembly
 language source file which is then assembled and included with your own

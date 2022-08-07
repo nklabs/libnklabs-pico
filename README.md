@@ -50,3 +50,54 @@ Basiclly to build you just clone this repository and type "make".
 * Python3 (for 2nd stage bootloader checksum)
 * Native C++ compiler (for ELF2UF2 tool)
 
+## Build
+
+Just type:
+
+	make
+
+To install the image on the Raspberry Pi Pico board:
+
+1. Unplug Raspberry Pi Pico's USB cable
+
+2. While holding the BOOTSEL button in, connect the Raspberry Pi Pico USB to
+your computer.  The board should show up as a USB drive.
+
+3. Copy the pico.uf2 file to /media/$USER/RPI-RP2
+
+The libnklabs CLI should come up on the UART.  The UART uses GP0 and GP1. 
+Connect to it with a USB to serial adapter cable:
+
+	sudo apt-get install picocom
+
+	picocom --baud 115200 /dev/ttyUSB0
+
+You should see:
+
+~~~
+[Initialize] Work queue
+[Initialize] Database
+Neither bank is good!
+cal load failed.
+[Initialize] Command Line Interface
+[Initialize] Begin main loop
+>
+>help
+help <name> for help with a specific command
+
+Available commands:
+
+dbase                     Database store
+echo                      Control command echoing
+help                      Help command
+info                      Display serial number and firmware information
+mcuflash                  Read/write flash memory
+mem                       Read/write memory
+power                     Show/control power mode
+reboot                    Reboot system
+work                      Show work queue
+ymodem                    Transfer files over serial
+>
+>
+~~~
+

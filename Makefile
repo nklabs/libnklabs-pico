@@ -35,7 +35,7 @@ NK_GIT_REV := \"$(if $(shell git rev-parse --is-inside-work-tree),$(shell git re
 
 # libnklabs: A define for the platform
 
-NK_PLATFORM := NK_PLATFORM_RISCV
+NK_PLATFORM := NK_PLATFORM_PICO
 
 # Tools used
 

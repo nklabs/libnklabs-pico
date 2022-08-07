@@ -16,11 +16,11 @@ is what we've learned:
 
 * A special tool must be built which converts the .elf output into a
   Microsoft UF2 file suitable for copying to the filesystem that shows up when you plug the Pi Pico into USB.
-This lets you install your firmware by just copying this file on the fake drive.
+This lets you install your firmware by just copying this file to the fake drive.
 
 * The image must include a second stage bootloader.  This a separate program
-built on its own.  A python scripts pads out and adds a checksum to the
-resulting image.  It is then converted into a ASCII hex bytes in an assembly
+built on its own.  A python script pads out and adds a checksum to the
+resulting image.  It is then converted into ASCII hex bytes in an assembly
 language source file which is then assembled and included with your own
 program.  A key point is that this bootloader must know the type of flash
 device that is attached to the RP2040.  CMake produces a C header file that

@@ -22,9 +22,9 @@ This lets you install your firmware by just copying this file to the fake drive.
 built on its own.  A Python script pads out and adds a checksum to the
 resulting image.  It is then converted into ASCII hex bytes in an assembly
 language source file which is then assembled and included with your own
-program.  A key point is that this bootloader must know the type of flash
-device that is attached to the RP2040.  CMake produces a C header file that
-indicates the board type.  See generated/pico/config_autogen.h,
+program.  A key point is that this bootloader must know the type of the
+SPI-flash IC that is attached to the RP2040.  CMake produces a C header file
+that indicates the board type.  See generated/pico/config_autogen.h,
 pico-sdk/src/boards/include/boards, and pico-sdk/src/rp2_common/boot_stage2.
 
 Otherwise the build process is straightforward, matching any other ARM

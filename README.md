@@ -1,5 +1,9 @@
 # libnklabs on Raspberry Pi Pico / RP2040
 
+This repository holds an example application for
+[libnklabs](https://github.com/nklabs/libnklabs) that runs on the Raspberry
+Pi Pico MCU board.
+
 ![Pi Pico](doc/pico.png)
 
 The Rasberry Pi Pico SDK uses CMake for its build environment.  This is an
@@ -34,14 +38,15 @@ is straightforward, matching any other ARM Cortex-M device.  Aside from ARM
 cross-compiler, the only prerequisites are Python3 and a native C++
 compiler.
 
-CMake is used to select just the parts of the SDK you use in your project. 
-For our Makefile, we just include all components.  If a component is unused,
-the linker will not include it.  There are not so many components that
-trimming them saves any build time.
+CMake is also used to select just the parts of the SDK you use in your
+project.  For our Makefile, we just include all components.  If a component
+is unused, the linker will not include it, so no space is wasted.  There are
+not so many components that trimming them saves significant build time.
 
-The Raspberry Pi Pico SDK expects you to include it as a git submodule, but
-we've included it as a subtree instead.  This means that you can use this
-repository directly- no need for submodule initialization.
+The Raspberry Pi Pico SDK expects you to include its git repository in your
+own project's git repository as a git submodule.  However, we've included it
+as a subtree instead.  This means that you can use this repository directly-
+no need for the submodule initialization steps.
 
 Basiclly to build you just clone this repository and type "make".
 

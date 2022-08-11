@@ -48,6 +48,7 @@ int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
 
 int nk_hal_i2c_ping(void *port, uint8_t addr)
 {
+	// Lame hardware can not do address-only transfers
 	uint8_t buf;
 	int rtn = nk_hal_i2c_read(port, addr, 1, &buf);
 	if (rtn < 0)

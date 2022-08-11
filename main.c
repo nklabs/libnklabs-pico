@@ -27,6 +27,7 @@
 #include "nkdbase.h"
 #include "database.h"
 #include "i2c.h"
+#include "wdt.h"
 
 int main()
 {
@@ -35,6 +36,7 @@ int main()
 	database_init();
 	nk_init_cli();
 	nk_init_i2c();
+	nk_init_wdt();
 	nk_sched_loop();
 	return 0;
 }

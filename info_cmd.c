@@ -24,6 +24,21 @@
 #include "version.h"
 #include "nkreadline.h"
 #include "nkcli.h"
+#include "pico/unique_id.h"
+#include "hardware/watchdog.h"
+
+// Defines from linker
+extern char __boot2_start__;
+extern char __boot2_end__;
+extern char __logical_binary_start;
+extern char __flash_binary_end;
+extern char __etext;
+extern char __data_start__;
+extern char __data_end__;
+extern char __bss_start__;
+extern char __bss_end__;
+extern char __end__; // Heap
+extern char __StackLimit; // End of RAM
 
 // Print information about firmware and system
 
@@ -41,7 +56,41 @@ static int cmd_info(nkinfile_t *args)
 		nk_printf("  sizeof(long) = %u\n", sizeof(long));
 		nk_printf("  sizeof(long long) = %u\n", sizeof(long long));
 		nk_printf("  sizeof(void *) = %u\n", sizeof(void *));
+		pico_unique_board_id_t board_id;
+		pico_get_unique_board_id(&board_id);
 
+		nk_printf("Unique board id:");
+		for (int i = 0; i < PICO_UNIQUE_BOARD_ID_SIZE_BYTES; ++i) {
+			nk_printf(" %02x", board_id.id[i]);
+		}
+		nk_printf("\n");
+
+		nk_printf("  __boot2_start__ = %p\n", &__boot2_start__);
+		nk_printf("  __boot2_end__ = %p\n", &__boot2_end__);
+		nk_printf("  __logical_binary_start = %p\n", &__logical_binary_start);
+		nk_printf("  __etext = %p\n", &__etext);
+		nk_printf("  __flash_binary_end = %p\n", &__flash_binary_end);
+
+		nk_printf("  __data_start__ = %p\n", &__data_start__);
+		nk_printf("  __data_end__ = %p\n", &__data_end__);
+		nk_printf("  __bss_start__ = %p\n", &__bss_start__);
+		nk_printf("  __bss_end__ = %p\n", &__bss_end__);
+		nk_printf("  __end__ = %p\n", &__end__);
+		nk_printf("  __StackLimit = %p\n", &__StackLimit);
+
+		nk_printf("  an address in current stack = %p\n", &args);
+		nk_printf("  an address in current text = %p\n", &cmd_info);
+
+		nk_printf("RAM size = %u\n", (unsigned int)&__StackLimit - 0x20000000);
+
+		const char *cause;
+		if (watchdog_enable_caused_reboot())
+			cause = "Watchdog";
+		else if (watchdog_caused_reboot())
+			cause = "Software";
+		else
+			cause = "Hardware";
+		nk_printf("Reboot cause = %s\n", cause);
 
 	} else {
 		nk_printf("Syntax error\n");

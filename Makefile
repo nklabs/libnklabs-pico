@@ -251,6 +251,7 @@ OBJS = \
   nki2c_pico.o \
   nkuart_pico.o \
   nkymodem_cmd.o \
+  wdt.o \
 
 # Keep object files in a subdirectory
 

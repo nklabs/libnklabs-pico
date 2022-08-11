@@ -131,7 +131,7 @@ int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, size_t b
 {
 	(void)info;
 	memcpy(data, (void *)(XIP_BASE + address), byte_count);
-	return -1;
+	return 0;
 }
 
 void nk_reboot(void)

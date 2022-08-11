@@ -5,8 +5,6 @@ Bring in CLI commands from the Atmel/STM example:
   I2C
   SPI
 
-Figure out MCU flash, get it to work
-
 Get firmware updates over ymodem working.
 
 Add to info command:
@@ -16,5 +14,3 @@ Add to info command:
   Image address information
   Print board serial number
   etc.
-
-Get reboot command to work

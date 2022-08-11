@@ -446,6 +446,9 @@ clean:
 	rm -f bs2_default.bin bs2_default.dis bs2_default.elf bs2_default_padded_checksummed.S compile_time_choice.o
 	rm -rf obj
 
+flash:
+	cp $(NAME).uf2 /media/$(USER)/RPI-RP2
+
 # include dependancy files if they exist
 -include $(SUBDIR_OBJS:.o=.d)
 

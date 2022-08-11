@@ -36,12 +36,14 @@ typedef struct {
 int nk_bitbang_i2c_write(nk_bitbang_i2c_bus_t *bus, uint8_t addr, size_t len, const uint8_t *buf);
 int nk_bitbang_i2c_write_nostop(nk_bitbang_i2c_bus_t *bus, uint8_t addr, size_t len, const uint8_t *buf);
 int nk_bitbang_i2c_read(nk_bitbang_i2c_bus_t *bus, uint8_t addr, size_t len, uint8_t *buf);
+int nk_bitbang_i2c_ping(nk_bitbang_i2c_bus_t *bus, uint8_t addr);
 
 // Functions to use for MCU's I2C hardware
 
 int nk_hal_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf);
 int nk_hal_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf);
 int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf);
+int nk_hal_i2c_ping(void *port, uint8_t addr);
 
 // Generic access to a specific I2C bus
 
@@ -50,6 +52,7 @@ typedef struct {
     int (*i2c_write)(void *i2c_ptr, uint8_t addr, size_t len, const uint8_t *buf);
     int (*i2c_write_nostop)(void *i2c_ptr, uint8_t addr, size_t len, const uint8_t *buf);
     int (*i2c_read)(void *i2c_ptr, uint8_t addr, size_t len, uint8_t *buf);
+    int (*i2c_ping)(void *i2c_ptr, uint8_t addr);
 
     // First argument for above functions
     void *i2c_ptr;
@@ -70,6 +73,7 @@ typedef struct {
 int nk_i2c_write(const nk_i2c_device_t *device, size_t len, const uint8_t *buf);
 int nk_i2c_write_nostop(const nk_i2c_device_t *device, size_t len, const uint8_t *buf);
 int nk_i2c_read(const nk_i2c_device_t *device, size_t len, uint8_t *buf);
+int nk_i2c_ping(const nk_i2c_device_t *device);
 
 // Register interface on top of direct access
 

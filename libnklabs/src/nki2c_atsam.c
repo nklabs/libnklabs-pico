@@ -85,3 +85,16 @@ int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
 
         return rtn;
 }
+
+int nk_hal_i2c_ping(void *port, uint8_t addr)
+{
+#ifdef __SAME70Q21__
+        // Lame hardware that can't do address-only transfers
+        // Hope that read has no side effects..
+        uint8_t buf = 0;
+        return nk_hal_i2c_read(port, addr, 1, &buf);
+#else
+        uint8_t buf = 0;
+        return nk_hal_i2c_write(port, addr, 0, &buf);
+#endif
+}

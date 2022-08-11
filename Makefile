@@ -228,12 +228,14 @@ OBJS = \
   $(PICO_SDK)src/rp2_common/pico_multicore/multicore.o \
   basic_cmds.o \
   database.o \
+  i2c.o \
   info_cmd.o \
   libnklabs/src/nkchecked.o \
   libnklabs/src/nkcli.o \
   libnklabs/src/nkcrclib.o \
   libnklabs/src/nkdbase.o \
   libnklabs/src/nkdirect.o \
+  libnklabs/src/nki2c.o \
   libnklabs/src/nkinfile.o \
   libnklabs/src/nkmcuflash.o \
   libnklabs/src/nkoutfile.o \
@@ -246,6 +248,7 @@ OBJS = \
   libnklabs/src/nkymodem.o \
   main.o \
   nkarch_pico.o \
+  nki2c_pico.o \
   nkuart_pico.o \
   nkymodem_cmd.o \
 

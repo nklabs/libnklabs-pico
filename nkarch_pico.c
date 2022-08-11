@@ -26,6 +26,7 @@
 #include "nksched.h"
 #include "hardware/timer.h"
 #include "hardware/flash.h"
+#include "hardware/watchdog.h"
 
 // Convert delay in milliseconds to number of scheduler timer clock ticks
 nk_time_t nk_convert_delay(uint32_t delay)
@@ -129,7 +130,7 @@ int nk_mcuflash_write(const void *info, uint32_t address, const uint8_t *data, s
 int nk_mcuflash_read(const void *info, uint32_t address, uint8_t *data, size_t byte_count)
 {
 	(void)info;
-	memcpy(data, XIP_BASE + address, byte_count);
+	memcpy(data, (void *)(XIP_BASE + address), byte_count);
 	return -1;
 }
 

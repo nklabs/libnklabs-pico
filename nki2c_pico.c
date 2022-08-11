@@ -19,22 +19,39 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// rp2040 I2C
 
 #include "nkarch.h"
-#include "nkuart.h"
-#include "nksched.h"
-#include "nkcli.h"
-#include "nkdbase.h"
-#include "database.h"
-#include "i2c.h"
+#include "nki2c.h"
+#include "hardware/i2c.h"
 
-int main()
+int nk_hal_i2c_write(void *port, uint8_t addr, size_t len, const uint8_t *buf)
 {
-	nk_init_uart();
-	nk_init_sched();
-	database_init();
-	nk_init_cli();
-	nk_init_i2c();
-	nk_sched_loop();
-	return 0;
+	int rtn = i2c_write_blocking(port, addr, buf, len, false);
+
+        return rtn;
+}
+
+int nk_hal_i2c_write_nostop(void *port, uint8_t addr, size_t len, const uint8_t *buf)
+{
+	int rtn = i2c_write_blocking(port, addr, buf, len, true);  // true to keep master control of bus
+
+	return rtn;
+}
+
+int nk_hal_i2c_read(void *port, uint8_t addr, size_t len, uint8_t *buf)
+{
+	int rtn = i2c_read_blocking(port, addr, buf, len, false);
+
+	return rtn;
+}
+
+int nk_hal_i2c_ping(void *port, uint8_t addr)
+{
+	uint8_t buf;
+	int rtn = nk_hal_i2c_read(port, addr, 1, &buf);
+	if (rtn < 0)
+		return rtn;
+	else
+		return 0;
 }

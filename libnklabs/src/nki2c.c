@@ -39,6 +39,11 @@ int nk_i2c_read(const nk_i2c_device_t *dev, size_t len, uint8_t *buf)
 	return dev->i2c_bus->i2c_read(dev->i2c_bus->i2c_ptr, dev->i2c_addr, len, buf);
 }
 
+int nk_i2c_ping(const nk_i2c_device_t *dev)
+{
+	return dev->i2c_bus->i2c_ping(dev->i2c_bus->i2c_ptr, dev->i2c_addr);
+}
+
 int nk_i2c_put_byte(const nk_i2c_device_t *dev, uint8_t ofst, uint8_t data)
 {
 	uint8_t buf[2];
@@ -244,37 +249,12 @@ int nk_i2c_command(const nk_i2c_bus_t *bus, nkinfile_t *args)
 		//   78 - 7B = 10-bit slave addressing
 		//   7C - 7F = reserved for future purposes
 
-#ifdef __SAME70Q21__
-
-		// atsame70 at least does not support 0 length (address only) writes, so trying reading one byte from
-		// each possible slave instead
-
 		for (addr = 8; addr != 0x78; ++addr) {
-			// atsame70 at least does not support 0 length (address only) writes
-			int status;
-			nk_printf("try %x\n", addr);
-			write_array[0] = 0;
-			write_array[1] = 0;
-#if 1
-			status = bus->i2c_write(bus->i2c_ptr, addr, 2, write_array);
-			nk_printf("write status = %x\n", status);
-#endif
-#if 0
-			status  = bus->i2c_read(bus->i2c_ptr, addr, 1, read_array);
-			nk_printf("read status = %x\n", status);
-#endif
+			int status  = bus->i2c_ping(bus->i2c_ptr, addr);
 			if (!status) {
 				nk_printf("Found device %x\n", addr);
 			}
 		}
-#else
-		for (addr = 8; addr != 0x78; ++addr) {
-			int status  = bus->i2c_write(bus->i2c_ptr, addr, 0, write_array);
-			if (!status) {
-				nk_printf("Found device %x\n", addr);
-			}
-		}
-#endif
 		return 0;
 	}
 

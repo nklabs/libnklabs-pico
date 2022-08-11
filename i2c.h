@@ -1,4 +1,4 @@
-// Copyright 2020 NK Labs, LLC
+// Copyright 2021 NK Labs, LLC
 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -19,22 +19,15 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#ifndef _Ii2c
+#define _Ii2c
 
-#include "nkarch.h"
-#include "nkuart.h"
-#include "nksched.h"
-#include "nkcli.h"
-#include "nkdbase.h"
-#include "database.h"
-#include "i2c.h"
+#include "nki2c.h"
 
-int main()
-{
-	nk_init_uart();
-	nk_init_sched();
-	database_init();
-	nk_init_cli();
-	nk_init_i2c();
-	nk_sched_loop();
-	return 0;
-}
+extern uint8_t i2c_buffer[16];
+
+extern const nk_i2c_bus_t ard_i2c_bus;
+
+void nk_init_i2c();
+
+#endif

@@ -484,8 +484,16 @@ obj/%.o: %.cpp
 
 # Assemble
 obj/%.o: %.S
+	@echo
 	mkdir -p obj/$(shell dirname $*) && \
 	$(CC) -c $(CFLAGS) $*.S -o obj/$*.o
+	@$(CC) -MM $(CFLAGS) $*.S > obj/$*.d
+# Improve dependency file produced by gcc... allows files to be renamed and source files to exist
+# in subdirectories.
+	@mv -f obj/$*.d obj/$*.d.tmp
+	@sed -e 's|.*:|obj/$*.o:|' < obj/$*.d.tmp > obj/$*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
+	@rm -f obj/$*.d.tmp
 
 #
 # Build elf2uf2 tool

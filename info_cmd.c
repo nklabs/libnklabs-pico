@@ -97,6 +97,7 @@ static int cmd_info(nkinfile_t *args)
 		nk_printf("  __etext = %p\n", &__etext);
 		nk_printf("  __flash_binary_end = %p\n", &__flash_binary_end);
 		nk_printf("  an address in current text = %p\n", &cmd_info);
+		nk_printf("Image size = %u\n", (unsigned int)&__flash_binary_end - (unsigned int)&__boot2_start__);
 
 		nk_printf("RAM locations:\n");
 		nk_printf("  __data_start__ = %p\n", &__data_start__);

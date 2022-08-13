@@ -6,8 +6,9 @@ NAME := pico
 
 # Which board?  The 2nd stage bootloader needs this to know what type of flash IC is used
 # But also see generated/config_autogen.h
+# Set this with "make config BOARD=pico"
 
-BOARD := pico
+BOARD ?= $(shell cat BOARD)
 
 # Where is pico-sdk?
 PICO_SDK := pico-sdk/
@@ -61,7 +62,7 @@ ELF2UF2 := ./elf2uf2
 
 # C compiler flags
 
-CFLAGS =  \
+CFLAGS :=  \
  -D$(NK_PLATFORM) \
  -DNK_PLATFORM=\"$(NK_PLATFORM)\" \
  -DNK_VERSION_MAJOR=$(NK_VERSION_MAJOR) \
@@ -174,7 +175,7 @@ CFLAGS =  \
 
 # List object files here
 
-OBJS = \
+OBJS := \
   $(PICO_SDK)src/common/pico_sync/critical_section.o \
   $(PICO_SDK)src/common/pico_sync/lock_core.o \
   $(PICO_SDK)src/common/pico_sync/mutex.o \
@@ -259,9 +260,9 @@ OBJS = \
 
 # Keep object files in a subdirectory
 
-MOST_OBJS = $(addprefix $(OBJ_DIR), $(OBJS))
+MOST_OBJS := $(addprefix $(OBJ_DIR), $(OBJS))
 
-SUBDIR_OBJS = $(MOST_OBJS) $(OBJ_DIR)version.o
+SUBDIR_OBJS := $(MOST_OBJS) $(OBJ_DIR)version.o
 
 # Default target
 # Convert .elf to other formats
@@ -455,20 +456,41 @@ $(OBJ_DIR)version.o: $(MOST_OBJS) VERSION_MAJOR VERSION_MINOR
 
 .PHONY: help
 help:
-	@echo "make        Build $(NAME).uf2"
-	@echo "make flash  Program flash memory by copying $(NAME).uf2 to /media/$(USER)/RPI-RP2"
-	@echo "make clean  Delete intermediate files"
+	@echo
+	@echo "make                     Build $(NAME).uf2"
+	@echo
+	@echo "make flash               Program flash memory by copying $(NAME).uf2 to /media/$(USER)/RPI-RP2"
+	@echo
+	@echo "make clean               Delete intermediate files"
+	@echo
+	@echo "make cleaner             Delete intermediate files and final image"
+	@echo
+	@echo "make config BOARD=xxxx   Configure build for specified board.  See $(PICO_SDK)src/boards/include/boards"
+	@echo
 
 .PHONY: clean
 clean:
-	rm -f $(NAME).elf $(NAME).hex $(NAME).bin $(NAME).dis $(NAME).uf2
-	rm -f  $(ELF2UF2)
+	rm -f $(ELF2UF2)
 	rm -f bs2_default.bin bs2_default.dis bs2_default.elf bs2_default_padded_checksummed.S compile_time_choice.o
 	rm -rf $(OBJ_DIR)
+
+.PHONY: cleaner
+cleaner: clean
+	rm -f $(NAME).elf $(NAME).hex $(NAME).bin $(NAME).dis $(NAME).uf2
 
 .PHONY: flash
 flash: $(NAME).uf2
 	cp $(NAME).uf2 /media/$(USER)/RPI-RP2
+
+.PHONY: config
+config: clean
+	@echo
+	echo "$(BOARD)" >BOARD
+	echo "#include \"../../$(PICO_SDK)src/boards/include/boards/$(BOARD).h\"" >generated/pico/config_autogen.h
+	echo "#include \"../../$(PICO_SDK)src/rp2_common/cmsis/include/cmsis/rename_exceptions.h\"" >>generated/pico/config_autogen.h
+	@echo
+	@echo "Selected board = $(BOARD)"
+	@echo
 
 # include dependancy files if they exist
 -include $(SUBDIR_OBJS:.o=.d)

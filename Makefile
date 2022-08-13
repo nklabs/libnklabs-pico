@@ -1,5 +1,7 @@
 # Makefile for RP2040 / PICO PI
 
+# Name of this project, final target
+
 NAME := pico
 
 # Which board?  The 2nd stage bootloader needs this to know what type of flash IC is used
@@ -7,10 +9,12 @@ NAME := pico
 
 BOARD := pico
 
-all: $(NAME).uf2
-
 # Where is pico-sdk?
 PICO_SDK := pico-sdk/
+
+# Where should we put object and dependency files?
+# This directory is deleted by "make clean"
+OBJ_DIR := obj/
 
 # libnklabs: collect information for version.c
 
@@ -40,14 +44,14 @@ NK_PLATFORM := NK_PLATFORM_PICO
 # Tools used
 
 # Cross compiler
-TOOL_PATH := 
+TOOL_DIR := 
 
-CC := $(TOOL)arm-none-eabi-gcc
-CPP := $(TOOL)arm-none-eabi-g++
-AS := $(TOOL)arm-none-eabi-gcc
-LD := $(TOOL)arm-none-eabi-g++
-OBJCOPY := $(TOOL)arm-none-eabi-objcopy
-OBJDUMP := $(TOOL)arm-none-eabi-objdump
+CC := $(TOOL_DIR)arm-none-eabi-gcc
+CPP := $(TOOL_DIR)arm-none-eabi-g++
+AS := $(TOOL_DIR)arm-none-eabi-gcc
+LD := $(TOOL_DIR)arm-none-eabi-g++
+OBJCOPY := $(TOOL_DIR)arm-none-eabi-objcopy
+OBJDUMP := $(TOOL_DIR)arm-none-eabi-objdump
 
 # Native C++ compiler for elf2uf2
 NATIVE_CPP := c++
@@ -255,12 +259,21 @@ OBJS = \
 
 # Keep object files in a subdirectory
 
-MOST_OBJS = $(addprefix obj/, $(OBJS))
+MOST_OBJS = $(addprefix $(OBJ_DIR), $(OBJS))
 
-SUBDIR_OBJS = $(MOST_OBJS) obj/version.o
+SUBDIR_OBJS = $(MOST_OBJS) $(OBJ_DIR)version.o
 
-# Rebuild version.o if any other file changed
-obj/version.o: $(MOST_OBJS) VERSION_MAJOR VERSION_MINOR
+# Default target
+# Convert .elf to other formats
+
+$(NAME).uf2 $(NAME).hex $(NAME).bin $(NAME).dis: $(NAME).elf $(ELF2UF2)
+	@echo
+	$(ELF2UF2) $(NAME).elf $(NAME).uf2
+	$(OBJCOPY) -Oihex $(NAME).elf $(NAME).hex
+	$(OBJCOPY) -Obinary $(NAME).elf $(NAME).bin
+	$(OBJDUMP) -h $(NAME).elf >$(NAME).dis
+	$(OBJDUMP) -d $(NAME).elf >>$(NAME).dis
+	@echo
 
 # Link
 # All the --wraps are for directing math functions to use bootloader ROM versions
@@ -434,69 +447,52 @@ $(NAME).elf: pico.ld $(SUBDIR_OBJS) bs2_default_padded_checksummed.S
  -Wl,--wrap=getchar \
  $(SUBDIR_OBJS)  -o $(NAME).elf bs2_default_padded_checksummed.S
 
-# Convert .elf to other formats
+# Rebuild version.o if any other file changed
 
-$(NAME).uf2 $(NAME).hex $(NAME).bin $(NAME).dis: $(NAME).elf $(ELF2UF2)
-	@echo
-	$(ELF2UF2) $(NAME).elf $(NAME).uf2
-	$(OBJCOPY) -Oihex $(NAME).elf $(NAME).hex
-	$(OBJCOPY) -Obinary $(NAME).elf $(NAME).bin
-	$(OBJDUMP) -h $(NAME).elf >$(NAME).dis
-	$(OBJDUMP) -d $(NAME).elf >>$(NAME).dis
-	@echo
+$(OBJ_DIR)version.o: $(MOST_OBJS) VERSION_MAJOR VERSION_MINOR
 
+# Commmands / phony targets
+
+.PHONY: help
+help:
+	@echo "make        Build $(NAME).uf2"
+	@echo "make flash  Program flash memory by copying $(NAME).uf2 to /media/$(USER)/RPI-RP2"
+	@echo "make clean  Delete intermediate files"
+
+.PHONY: clean
 clean:
-	rm -f $(NAME).elf $(NAME).hex $(NAME).bin $(NAME).dis $(NAME).uf2 $(ELF2UF2)
+	rm -f $(NAME).elf $(NAME).hex $(NAME).bin $(NAME).dis $(NAME).uf2
+	rm -f  $(ELF2UF2)
 	rm -f bs2_default.bin bs2_default.dis bs2_default.elf bs2_default_padded_checksummed.S compile_time_choice.o
-	rm -rf obj
+	rm -rf $(OBJ_DIR)
 
-flash:
+.PHONY: flash
+flash: $(NAME).uf2
 	cp $(NAME).uf2 /media/$(USER)/RPI-RP2
 
 # include dependancy files if they exist
 -include $(SUBDIR_OBJS:.o=.d)
 
 # Compile and generate dependency info, C files
-obj/%.o: %.c
+$(OBJ_DIR)%.o: %.c
 	@echo
-	mkdir -p obj/$(shell dirname $*) && \
-	$(CC) -c $(CFLAGS) $*.c -o obj/$*.o
-	@$(CC) -MM $(CFLAGS) $*.c > obj/$*.d
-# Improve dependency file produced by gcc... allows files to be renamed and source files to exist
-# in subdirectories.
-	@mv -f obj/$*.d obj/$*.d.tmp
-	@sed -e 's|.*:|obj/$*.o:|' < obj/$*.d.tmp > obj/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
-	@rm -f obj/$*.d.tmp
+	@mkdir -p $(OBJ_DIR)$(shell dirname $*)
+	$(CC) -c $(CFLAGS) -MT $@ -MMD -MP -MF $(OBJ_DIR)$*.d $*.c -o $(OBJ_DIR)$*.o
 
 # Compile and generate dependency info, CPP files
-obj/%.o: %.cpp
+$(OBJ_DIR)%.o: %.cpp
 	@echo
-	mkdir -p obj/$(shell dirname $*) && \
-	$(CPP) -c $(CFLAGS) $*.cpp -o obj/$*.o
-	@$(CPP) -MM $(CFLAGS) $*.cpp > obj/$*.d
-# Improve dependency file produced by gcc... allows files to be renamed and source files to exist
-# in subdirectories.
-	@mv -f obj/$*.d obj/$*.d.tmp
-	@sed -e 's|.*:|obj/$*.o:|' < obj/$*.d.tmp > obj/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
-	@rm -f obj/$*.d.tmp
+	@mkdir -p $(OBJ_DIR)$(shell dirname $*)
+	$(CPP) -c $(CFLAGS) -MT $@ -MMD -MP -MF $(OBJ_DIR)$*.d $*.cpp -o $(OBJ_DIR)$*.o
 
 # Assemble
-obj/%.o: %.S
+$(OBJ_DIR)%.o: %.S
 	@echo
-	mkdir -p obj/$(shell dirname $*) && \
-	$(CC) -c $(CFLAGS) $*.S -o obj/$*.o
-	@$(CC) -MM $(CFLAGS) $*.S > obj/$*.d
-# Improve dependency file produced by gcc... allows files to be renamed and source files to exist
-# in subdirectories.
-	@mv -f obj/$*.d obj/$*.d.tmp
-	@sed -e 's|.*:|obj/$*.o:|' < obj/$*.d.tmp > obj/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
-	@rm -f obj/$*.d.tmp
+	@mkdir -p $(OBJ_DIR)$(shell dirname $*)
+	$(CC) -c $(CFLAGS) -MT $@ -MMD -MP -MF $(OBJ_DIR)$*.d $*.S -o $(OBJ_DIR)$*.o
 
 #
-# Build elf2uf2 tool
+# Build elf2uf2 tool using native compiler
 #
 
 $(ELF2UF2): $(PICO_SDK)tools/elf2uf2/main.cpp

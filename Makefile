@@ -235,6 +235,7 @@ OBJS := \
   database.o \
   i2c.o \
   info_cmd.o \
+  led.o \
   libnklabs/src/nkchecked.o \
   libnklabs/src/nkcli.o \
   libnklabs/src/nkcrclib.o \

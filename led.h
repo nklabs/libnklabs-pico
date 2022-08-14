@@ -1,4 +1,4 @@
-// Copyright 2020 NK Labs, LLC
+// Copyright 2021 NK Labs, LLC
 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -19,27 +19,4 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#include "nkarch.h"
-#include "nkuart.h"
-#include "nksched.h"
-#include "nkcli.h"
-#include "nkdbase.h"
-#include "database.h"
-#include "i2c.h"
-#include "wdt.h"
-#include "nkdriver_rtc_pico.h"
-
-int main()
-{
-	nk_init_uart();
-	nk_init_sched();
-	nk_mcu_rtc_init(NULL);
-	database_init();
-	nk_init_cli();
-	nk_init_i2c();
-	nk_init_wdt();
-	nk_init_led();
-	nk_sched_loop();
-	return 0;
-}
+void nk_init_led(void);

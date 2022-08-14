@@ -1,4 +1,4 @@
-// Copyright 2020 NK Labs, LLC
+// Copyright 2021 NK Labs, LLC
 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -19,27 +19,48 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #include "nkarch.h"
-#include "nkuart.h"
 #include "nksched.h"
-#include "nkcli.h"
-#include "nkdbase.h"
-#include "database.h"
-#include "i2c.h"
-#include "wdt.h"
-#include "nkdriver_rtc_pico.h"
+#include "nkprintf.h"
+#include "led.h"
+#include "pico/stdlib.h"
 
-int main()
+// Blink USER LED
+
+#define BLINK_DELAY 500 // Blink interval
+
+int led_tid; // Task ID for LED blinker
+int led_blink; // LED state
+
+// Blink USER_LED
+
+void led_blinker(void *data)
 {
-	nk_init_uart();
-	nk_init_sched();
-	nk_mcu_rtc_init(NULL);
-	database_init();
-	nk_init_cli();
-	nk_init_i2c();
-	nk_init_wdt();
-	nk_init_led();
-	nk_sched_loop();
-	return 0;
+    (void)data;
+    if (led_blink)
+    {
+#ifdef PICO_DEFAULT_LED_PIN
+        gpio_put(PICO_DEFAULT_LED_PIN, 0);
+#endif
+        led_blink = 0;
+    }
+    else
+    {
+#ifdef PICO_DEFAULT_LED_PIN
+        gpio_put(PICO_DEFAULT_LED_PIN, 1);
+#endif
+        led_blink = 1;
+    }
+    nk_sched(led_tid, led_blinker, NULL, BLINK_DELAY, "LED blinker");
+}
+
+void nk_init_led()
+{
+    nk_startup_message("LED\n");
+#ifdef PICO_DEFAULT_LED_PIN
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+#endif
+    led_tid = nk_alloc_tid();
+    nk_sched(led_tid, led_blinker, NULL, BLINK_DELAY, "LED blinker");
 }

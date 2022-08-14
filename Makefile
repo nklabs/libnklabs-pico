@@ -239,6 +239,7 @@ OBJS := \
   libnklabs/src/nkcli.o \
   libnklabs/src/nkcrclib.o \
   libnklabs/src/nkdbase.o \
+  libnklabs/src/nkdatetime.o \
   libnklabs/src/nkdirect.o \
   libnklabs/src/nki2c.o \
   libnklabs/src/nkinfile.o \
@@ -246,6 +247,7 @@ OBJS := \
   libnklabs/src/nkoutfile.o \
   libnklabs/src/nkprintf.o \
   libnklabs/src/nkreadline.o \
+  libnklabs/src/nkrtc.o \
   libnklabs/src/nkscan.o \
   libnklabs/src/nksched.o \
   libnklabs/src/nkserialize.o \
@@ -253,9 +255,11 @@ OBJS := \
   libnklabs/src/nkymodem.o \
   main.o \
   nkarch_pico.o \
+  nkdriver_rtc_pico.o \
   nki2c_pico.o \
   nkuart_pico.o \
   nkymodem_cmd.o \
+  rtc.o \
   wdt.o \
 
 # Keep object files in a subdirectory

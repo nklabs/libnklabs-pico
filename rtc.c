@@ -1,4 +1,4 @@
-// Copyright 2020 NK Labs, LLC
+// Copyright 2021 NK Labs, LLC
 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -19,26 +19,46 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #include "nkarch.h"
-#include "nkuart.h"
-#include "nksched.h"
-#include "nkcli.h"
-#include "nkdbase.h"
-#include "database.h"
-#include "i2c.h"
-#include "wdt.h"
-#include "nkdriver_rtc_pico.h"
 
-int main()
+#ifdef NK_PLATFORM_STM32
+#include "nkdriver_rtc_stm32.h"
+extern RTC_HandleTypeDef hrtc;
+#endif
+
+#ifdef NK_PLATFORM_ATSAM
+#include "nkdriver_rtc_atsam.h"
+#endif
+
+#ifdef NK_PLATFORM_PICO
+#include "nkdriver_rtc_pico.h"
+#endif
+
+#include "nkrtc.h"
+
+
+const nk_rtc_t mcu_rtc = {
+    .set_datetime = (int (*)(const void *, const nkdatetime_t *))nk_mcu_rtc_set_datetime,
+    .get_datetime = (int (*)(const void *, nkdatetime_t *))nk_mcu_rtc_get_datetime,
+#ifdef NK_PLATFORM_STM32
+    .port = &hrtc
+#endif
+#ifdef NK_PLATFORM_ATSAM
+    .port = &CALENDAR_0
+#endif
+#ifdef NK_PLATFORM_PICO
+    .port = NULL
+#endif
+};
+
+int cmd_rtc(nkinfile_t *args)
 {
-	nk_init_uart();
-	nk_init_sched();
-	nk_mcu_rtc_init(NULL);
-	database_init();
-	nk_init_cli();
-	nk_init_i2c();
-	nk_init_wdt();
-	nk_sched_loop();
-	return 0;
+    return nk_rtc_command(&mcu_rtc, args);
 }
+
+COMMAND(cmd_rtc,
+	">rtc                       MCU Real Time Clock access\n"
+        "-rtc                       Show date/time\n"
+        "-rtc YYYY-MM-DD HH:MM:SS\n"
+        "-                          Set date/time\n"
+)

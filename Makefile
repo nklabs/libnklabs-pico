@@ -246,6 +246,7 @@ OBJS := \
   libnklabs/src/nkinfile.o \
   libnklabs/src/nkmcuflash.o \
   libnklabs/src/nkoutfile.o \
+  libnklabs/src/nkpin.o \
   libnklabs/src/nkprintf.o \
   libnklabs/src/nkreadline.o \
   libnklabs/src/nkrtc.o \
@@ -260,6 +261,7 @@ OBJS := \
   nki2c_pico.o \
   nkuart_pico.o \
   nkymodem_cmd.o \
+  pins.o \
   rtc.o \
   wdt.o \
 

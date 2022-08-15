@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 #include "hardware/sync.h"
+#include "pico/stdlib.h"
 
 #define NK_FLASH
 

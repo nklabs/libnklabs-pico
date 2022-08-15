@@ -42,6 +42,10 @@ int hal_pin_read(const nk_pin_t *pin, bool *val)
 #ifdef NK_PLATFORM_ATSAM
     *val = (true == gpio_get_pin_level(pin->pin));
 #endif
+
+#ifdef NK_PLATFORM_PICO
+    *val = gpio_get(pin->pin);
+#endif
     return 0;
 }
 
@@ -53,6 +57,10 @@ int hal_pin_write(const nk_pin_t *pin, bool val)
 
 #ifdef NK_PLATFORM_ATSAM
     gpio_set_pin_level(pin->pin, val ? true : false);
+#endif
+
+#ifdef NK_PLATFORM_PICO
+    gpio_put(pin->pin, val);
 #endif
     return 0;
 }
@@ -72,6 +80,22 @@ int hal_pin_setmode(const nk_pin_t *pin, nk_pinmode_t mode)
 #ifdef NK_PLATFORM_ATSAM
     gpio_set_pin_direction(pin->pin, nk_pinmode_table[mode].mode);
     gpio_set_pin_pull_mode(pin->pin, nk_pinmode_table[mode].pull);
+#endif
+
+#ifdef NK_PLATFORM_PICO
+
+    gpio_init(pin->pin);
+
+    if (nk_pinmode_table[mode].mode)
+        gpio_set_dir(pin->pin, GPIO_OUT);
+    else
+        gpio_set_dir(pin->pin, GPIO_IN);
+
+    if (nk_pinmode_table[mode].pull)
+        gpio_set_pulls(pin->pin, true, false);
+    else
+        gpio_set_pulls(pin->pin, false, false);
+
 #endif
     return 0;
 }
@@ -104,6 +128,12 @@ const struct gpio_mode_entry nk_pinmode_table[] =
     [NK_PINMODE_INPUT] = { "input", GPIO_DIRECTION_IN, GPIO_PULL_OFF, 0 },
     [NK_PINMODE_INPUT_PULLUP] = { "input_pullup", GPIO_DIRECTION_IN, GPIO_PULL_UP, 0 },
     [NK_PINMODE_OUTPUT] = { "output", GPIO_DIRECTION_OUT, GPIO_PULL_OFF, 0 },
+#endif
+
+#ifdef NK_PLATFORM_PICO
+    [NK_PINMODE_INPUT] = { .name = "input", .mode = 0, .pull = 0, .speed = 0 },
+    [NK_PINMODE_INPUT_PULLUP] = { "input_pullup", .mode = 0, .pull = 1, .speed = 0 },
+    [NK_PINMODE_OUTPUT] = { "output", .mode = 1, .pull = 0, .speed = 0 },
 #endif
 };
 
@@ -174,5 +204,5 @@ COMMAND(cmd_pin,
     "-pin                       List GPIO info\n"
     "-pin set <pin>             Set pin\n"
     "-pin clear <pin>           Clear pin\n"
-    "-pin mode <mode>           Change pin mode\n"
+    "-pin mode <pin> <mode>     Change pin mode [usually to input, input_pullup or output]\n"
 )

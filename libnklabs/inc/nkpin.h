@@ -64,6 +64,10 @@ struct nk_pin {
 #ifdef NK_PLATFORM_ATSAM
     uint8_t pin; // Pin of CS_L line
 #endif
+
+#ifdef NK_PLATFORM_PICO
+    uint pin; // Pin number
+#endif
 };
 
 // Pin functions

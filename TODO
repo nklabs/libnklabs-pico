@@ -1,7 +1,6 @@
 Get USB version of CLI working
 
 Bring in CLI commands from the Atmel/STM example:
-  GPIO
   SPI
 
 Get firmware updates over ymodem working.
